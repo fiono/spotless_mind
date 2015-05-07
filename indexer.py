@@ -29,16 +29,13 @@ for (root, dirnames, filenames) in os.walk(dirname):
         for (pos, token) in tokens:
             token = stem(token)
             try:
-                bucket = index_dict[token]
-                found = False
-                for doc in bucket:
-                    if (doc["id"] == doc_id):
-                        doc["positions"].append(pos)
-                        found = True
-                if (not found):
-                    bucket.append({"id" : doc_id, "positions" : [pos]})
+                term_map = index_dict[token]
+                try:
+                    term_map[doc_id].append(pos)
+                except KeyError:
+                    term_map[doc_id] = [pos]
             except KeyError:
-                index_dict[token] = [{"id" : doc_id, "positions" : [pos]}]
+                index_dict[token] = {doc_id: [pos]}
 
         doc_id = doc_id + 1
         file.close()

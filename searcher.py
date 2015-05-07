@@ -27,10 +27,8 @@ docset = []
 for term in query.split():
     term = stem(term)
     try:
-        term_docs = index_dict[term]
-        doc_ids = []
-        for doc in term_docs:
-            doc_ids.append(doc["id"])
+        term_map = index_dict[term]
+        doc_ids = term_map.keys()
     except KeyError:
         doc_ids = []
     docset.append(doc_ids)
