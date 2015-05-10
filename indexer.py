@@ -3,7 +3,7 @@ import os
 import json
 
 from tokenizer import tokenize
-from stemmer import stem
+from stemmer import normalize
 
 if (len(sys.argv) != 2):
     print("Must supply one directory for indexing.")
@@ -27,7 +27,7 @@ for (root, dirnames, filenames) in os.walk(dirname):
 
         tokens = tokenize(file)
         for (pos, token) in tokens:
-            token = stem(token)
+            token = normalize(token)
             try:
                 term_map = index_dict[token]
                 try:

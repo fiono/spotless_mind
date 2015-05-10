@@ -2,7 +2,7 @@ import sys
 import json
 
 import setutils
-from stemmer import stem
+from stemmer import normalize
 
 if (len(sys.argv) != 3):
     print("Must supply an index name and one quoted search term or phrase.")
@@ -25,7 +25,7 @@ index_dict = full_index["index"]
 
 docset = []
 for term in query.split():
-    term = stem(term)
+    term = normalize(term)
     try:
         term_map = index_dict[term]
         doc_ids = term_map.keys()

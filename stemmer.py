@@ -47,7 +47,7 @@ suffix_mappings_2 = {
 
 # defines a "short" syllable
 def isShort(token):
-    if (re.search("({1}{0}[^aeiouywxY]|^{0}{1})$".format(vowels,nonvowels),token)):
+    if (re.search("({1}{1}[^aeiouywxY]|^{0}{1})$".format(vowels,nonvowels),token)):
         return True
     return False
 
@@ -155,6 +155,11 @@ def desuffix(token, r1, r2, is_short):
 
     return token
 
+def normalize(token):
+    return stem(strip(token))
+
+def strip(token):
+    return re.sub(r'\W+', '', token)
 
 def stem(token):
     token = token.lower()
