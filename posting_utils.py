@@ -1,17 +1,36 @@
+# a helper utility that iterates through two sorted collections and finds elements that
+# match a specified predicate
+def findMatchesAcrossCollections(c1, c2, findCondition, matchVal=None):
+    results = []
+
+    iter1 = iter(c1)
+    iter2 = iter(c2)
+
+    try:
+        el1 = iter1.next()
+        el2 = iter2.next()
+
+        while(True):
+            if findCondition(el1, el2):
+                if (matchVal == None):
+                    results.append(el1)
+                else:
+                    results.append(matchVal)
+
+                el1 = iter1.next()
+                el2 = iter2.next()
+            elif (el1 < el2):
+                el1 = iter1.next()
+            else:
+                el2 = iter2.next()
+    except StopIteration:
+        pass
+
+    return results
+
 # finds the intersection of two sorted numerical sets
 def intersect(s1, s2):
-    merged = []
-    idx1 = idx2 = 0
-    while (idx1 < len(s1) and idx2 < len(s2)):
-        if (s1[idx1] == s2[idx2]):
-            merged.append(s1[idx1])
-            idx1 += 1
-            idx2 += 1
-        elif (s1[idx1] < s2[idx2]):
-            idx1 += 1
-        else:
-            idx2 += 1
-    return merged
+    return findMatchesAcrossCollections(s1, s2, lambda id1, id2: id1 == id2)
 
 # finds the intersection of an array of sorted numerical sets
 def merge(docset):
@@ -20,60 +39,28 @@ def merge(docset):
     if (len(docset) == 1):
         return docset[0]
 
-    return intersect(docset[0], merge(docset[1:]))
+    return intersect(
+                docset[0],
+                merge(docset[1:])
+           )
 
 # finds the positional intersection of two posting lists as ordered dictionaries
 # from doc id to list of positions, sorted by doc id
 def phrase_match(p1, p2):
-    docset = []
+    return findMatchesAcrossCollections(p1, p2, lambda id1, id2:
+            findMatchesAcrossCollections(p1[id1], p2[id2], lambda p1, p2:
+                (p1 == (p2 - 1))
+            , id1)
+           )
 
-    iter1 = iter(p1)
-    iter2 = iter(p2)
-
-    try:
-        doc_id1 = iter1.next()
-        doc_id2 = iter2.next()
-
-        # break on StopIteration
-        while(True):
-
-            # iterate until we're comparing positional data for the same document
-            if (doc_id1 == doc_id2):
-
-                positions1 = p1[doc_id1]
-                positions2 = p2[doc_id2]
-
-                idx1 = idx2 = 0
-                while (idx1 < len(positions1) and idx2 < len(positions2)):
-
-                    # this distance indicates a phrase
-                    if (positions1[idx1] == (positions2[idx2] - 1)):
-                        # doesn't matter which
-                        docset.append(doc_id1)
-                        break
-                    elif (positions1[idx1] < positions2[idx2]):
-                        idx1 += 1
-                    else:
-                        idx2 += 1
-
-                doc_id1 = iter1.next()
-                doc_id2 = iter2.next()
-
-            elif (doc_id1 < doc_id2):
-                doc_id1 = iter1.next()
-            else:
-                doc_id2 = iter2.next()
-
-    except StopIteration:
-        pass
-
-    return docset
-
+# returns a phrase match across sorted postings lists
 def phrase_merge(postings_set):
     if (len(postings_set) == 0):
         return []
     elif (len(postings_set) == 1):
         return postings_set[0].keys()
 
-    return intersect(phrase_match(postings_set[0], postings_set[1]), phrase_merge(postings_set[1:]))
-
+    return intersect(
+                phrase_match(postings_set[0], postings_set[1]),
+                phrase_merge(postings_set[1:])
+           )
