@@ -1,6 +1,6 @@
 # a helper utility that iterates through two sorted collections and finds elements that
 # match a specified predicate
-def findMatchesAcrossCollections(c1, c2, findCondition, matchVal=None):
+def findMatchesAcrossCollections(c1, c2, findCondition):
     results = []
 
     iter1 = iter(c1)
@@ -12,15 +12,13 @@ def findMatchesAcrossCollections(c1, c2, findCondition, matchVal=None):
 
         while(True):
             if findCondition(el1, el2):
-                if (matchVal == None):
-                    results.append(el1)
-                else:
-                    results.append(matchVal)
-
+                results.append(el1)
                 el1 = iter1.next()
                 el2 = iter2.next()
+
             elif (el1 < el2):
                 el1 = iter1.next()
+
             else:
                 el2 = iter2.next()
     except StopIteration:
@@ -28,7 +26,7 @@ def findMatchesAcrossCollections(c1, c2, findCondition, matchVal=None):
 
     return results
 
-# finds the intersection of two sorted numerical sets
+# finds the intersection of two sorted numerical lists
 def intersect(s1, s2):
     return findMatchesAcrossCollections(s1, s2, lambda id1, id2: id1 == id2)
 
@@ -48,9 +46,10 @@ def merge(docset):
 # from doc id to list of positions, sorted by doc id
 def phrase_match(p1, p2):
     return findMatchesAcrossCollections(p1, p2, lambda id1, id2:
-            findMatchesAcrossCollections(p1[id1], p2[id2], lambda p1, p2:
+            (id1 == id2) and len(findMatchesAcrossCollections(p1[id1], p2[id2], lambda p1, p2:
+                # the position of term 1 must directly precede the position of term 2
                 (p1 == (p2 - 1))
-            , id1)
+            )) > 0
            )
 
 # returns a phrase match across sorted postings lists
