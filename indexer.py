@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from collections import OrderedDict
 
 from tokenizer import tokenize
 from stemmer import normalize
@@ -29,11 +30,11 @@ for (root, dirnames, filenames) in os.walk(dirname):
         for (pos, token) in tokens:
             token = normalize(token)
             try:
-                term_map = index_dict[token]
+                position_map = index_dict[token]
                 try:
-                    term_map[doc_id].append(pos)
+                    position_map[doc_id].append(pos)
                 except KeyError:
-                    term_map[doc_id] = [pos]
+                    position_map[doc_id] = [pos]
             except KeyError:
                 index_dict[token] = {doc_id: [pos]}
 
