@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import re
 from collections import OrderedDict
 
 from tokenizer import tokenize
@@ -23,23 +24,24 @@ index_dict = {}
 doc_id = 0
 for (root, dirnames, filenames) in os.walk(dirname):
     for filename in filenames:
-        file = open(os.path.join(root, filename), 'r')
-        id_map[doc_id] = filename
+        if (re.search("\.sw[op]$", filename) == None):
+            file = open(os.path.join(root, filename), 'r')
+            id_map[doc_id] = filename
 
-        tokens = tokenize(file)
-        for (pos, token) in tokens:
-            token = normalize(token)
-            try:
-                position_map = index_dict[token]
+            tokens = tokenize(file)
+            for (pos, token) in tokens:
+                token = normalize(token)
                 try:
-                    position_map[doc_id].append(pos)
+                    position_map = index_dict[token]
+                    try:
+                        position_map[doc_id].append(pos)
+                    except KeyError:
+                        position_map[doc_id] = [pos]
                 except KeyError:
-                    position_map[doc_id] = [pos]
-            except KeyError:
-                index_dict[token] = {doc_id: [pos]}
+                    index_dict[token] = {doc_id: [pos]}
 
-        doc_id = doc_id + 1
-        file.close()
+            doc_id = doc_id + 1
+            file.close()
 
 full_index = {"id_map" : id_map, "index" : index_dict}
 index_file.write(json.dumps(full_index))
