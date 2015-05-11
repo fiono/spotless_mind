@@ -73,9 +73,7 @@ def phrase_merge(postings_set):
     if (len(postings_set) == 0):
         return []
     elif (len(postings_set) == 1):
-        return postings_set[0]
-    elif (len(postings_set) == 2):
-        return phrase_match(postings_set[0], postings_set[1])
+        return postings_set[0].keys()
 
-    return intersect(phrase_match(postings_set[0], postings_set[1]), phrase_merge(postings_set[2:]))
+    return intersect(phrase_match(postings_set[0], postings_set[1]), phrase_merge(postings_set[1:]))
 
