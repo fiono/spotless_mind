@@ -2,7 +2,6 @@ import sys
 import os
 import json
 import re
-from collections import OrderedDict
 
 from tokenizer import tokenize
 from stemmer import normalize
