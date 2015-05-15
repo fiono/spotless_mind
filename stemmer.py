@@ -45,6 +45,15 @@ suffix_mappings_2 = {
         "ness": "",
 }
 
+aliases = {
+        "glitter"   : "litter",
+        "paint"     : "quaint",
+        "chip"      : "skip",
+        "lacquer"   : "whacker",
+        "mani"      : "uncanny",
+        "pedi"      : "sweaty",
+}
+
 # defines a "short" syllable
 def isShort(token):
     if (re.search("({1}{1}[^aeiouywxY]|^{0}{1})$".format(vowels,nonvowels),token)):
@@ -155,15 +164,13 @@ def desuffix(token, r1, r2, is_short):
 
     return token
 
-def normalize(token):
-    return stem(strip(token))
-
-def strip(token):
-    return re.sub(r'\W+', '', token)
+def alias(token):
+    # step 00
+    if (token in aliases):
+        token = aliases[token]
+    return token
 
 def stem(token):
-    token = token.lower()
-
     if (len(token) <= 2):
         return token
 

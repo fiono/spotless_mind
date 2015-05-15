@@ -2,7 +2,7 @@ import re
 from collections import OrderedDict
 
 import posting_utils
-from stemmer import normalize
+from stemmer import stem
 
 # searches an index file for a query
 def getMatches(query, full_index):
@@ -14,7 +14,7 @@ def getMatches(query, full_index):
     is_phrase = (len(query) == 1 and re.search(' ', query[0]) != None)
 
     if (is_phrase):
-        terms = [normalize(term) for term in query[0].split()]
+        terms = [stem(term) for term in query[0].split()]
         postings_lists = []
 
         for term in terms:
@@ -27,7 +27,7 @@ def getMatches(query, full_index):
         results = posting_utils.phrase_merge(postings_lists)
 
     else:
-        terms = [normalize(term) for term in query]
+        terms = [stem(term) for term in query]
         docset = []
 
         for term in terms:
