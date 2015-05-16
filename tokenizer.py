@@ -12,6 +12,7 @@ def normalize(token):
     return re.sub(r'\W+', '', token).lower()
 
 def tokenize(fh):
+    pos = 0
     blackout_counter = 0
 
     for line in fh:
@@ -25,4 +26,5 @@ def tokenize(fh):
                 if (blackout_counter > 0):
                     blackout_counter = blackout_counter - 1
                 else:
-                    yield token
+                    yield (pos, token)
+            pos += 1

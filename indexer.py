@@ -4,7 +4,7 @@ import json
 import re
 
 from tokenizer import tokenize
-from stemmer import stem
+from stemmer import *
 
 if (len(sys.argv) != 2):
     print("Must supply one directory for indexing.")
@@ -28,8 +28,7 @@ for (root, dirnames, filenames) in os.walk(dirname):
             id_map[doc_id] = filename
 
             tokens = tokenize(file)
-            for token in tokens:
-                pos = 0
+            for (pos, token) in tokens:
                 token = alias(token)
                 token = stem(token)
                 try:
