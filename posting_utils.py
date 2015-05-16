@@ -27,8 +27,39 @@ def findMatchesAcrossCollections(c1, c2, findCondition):
     return results
 
 # finds the intersection of two sorted numerical lists
-def intersect(s1, s2):
-    return findMatchesAcrossCollections(s1, s2, lambda id1, id2: id1 == id2)
+def intersect(docset1, docset2):
+    return findMatchesAcrossCollections(docset1, docset2, lambda id1, id2: id1 == id2)
+
+# calculates difference between two sorted numerical lists
+def difference(docset1, docset2):
+    results = []
+
+    intersection = intersect(docset1, docset2)
+    if (len(intersection) == 0):
+        return docset1
+
+    iter1 = iter(docset1)
+    iter2 = iter(intersection)
+
+    try:
+        id1 = iter1.next()
+        id2 = iter2.next()
+
+        while(True):
+            if (id1 != id2):
+                results.append(id1)
+                id1 = iter1.next()
+            else:
+                #if (iter2.hasNext()): # BIGF
+                try:
+                    id2 = iter2.next()
+                except StopIteration:
+                    id2 = None
+                id1 = iter1.next()
+    except StopIteration:
+        pass
+
+    return results
 
 # finds the intersection of an array of sorted numerical sets
 def merge(docset):

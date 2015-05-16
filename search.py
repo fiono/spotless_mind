@@ -2,7 +2,7 @@ import re
 from collections import OrderedDict
 from collections import Set
 
-import posting_utils
+from posting_utils import *
 from stemmer import stem
 
 def phraseSearch(terms, index_dict):
@@ -15,7 +15,7 @@ def phraseSearch(terms, index_dict):
         except KeyError:
             pass
 
-    return posting_utils.phrase_merge(postings_lists)
+    return phrase_merge(postings_lists)
 
 def termSearch(terms, index_dict):
     docset = []
@@ -28,11 +28,11 @@ def termSearch(terms, index_dict):
         except KeyError:
             pass
 
-    return posting_utils.merge(docset)
+    return merge(docset)
 
 def noNailPolish(results, index_dict):
     nail_polish_results = phraseSearch("nail polish".split(), index_dict)
-    return set(results).difference(set(nail_polish_results))
+    return difference(results, nail_polish_results)
 
 # searches an index file for a query
 def getMatches(query, full_index):
