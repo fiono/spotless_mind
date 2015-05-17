@@ -50,7 +50,6 @@ def difference(docset1, docset2):
                 results.append(id1)
                 id1 = iter1.next()
             else:
-                #if (iter2.hasNext()): # BIGF
                 try:
                     id2 = iter2.next()
                 except StopIteration:
