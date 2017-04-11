@@ -35,20 +35,16 @@ def noNailPolish(results, index_dict):
     return difference(results, nail_polish_results)
 
 # searches an index file for a query
-def getMatches(query, full_index):
+def getMatches(terms, is_phrase, full_index):
     results = []
 
     index_dict = full_index["index"]
 
-    is_phrase = (len(query) == 1 and re.search(' ', query[0]) != None)
-
+    stemmed = [stem(term) for term in terms]
     if (is_phrase):
-        terms = [stem(term) for term in query[0].split()]
-        results = phraseSearch(terms, index_dict)
-
+        results = phraseSearch(stemmed, index_dict)
     else:
-        terms = [stem(term) for term in query]
-        results = termSearch(terms, index_dict)
+        results = termSearch(stemmed, index_dict)
 
     results = noNailPolish(results, index_dict)
 
