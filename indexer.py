@@ -7,7 +7,7 @@ import sys
 from tokenizer import tokenize
 from stemmer import *
 
-def index_dir(dirname):
+def indexDir(dirname):
   basename = os.path.basename(dirname.rstrip("/"))
   index_file = open('./indexes/%s_index' % basename, 'w');
 
@@ -47,5 +47,5 @@ if __name__ == '__main__':
     print("%s is not a valid directory" % (args.data_dir))
     sys.exit()
   else:
-    index_dir(args.data_dir)
+    indexDir(args.data_dir)
   
