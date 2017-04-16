@@ -167,7 +167,7 @@ def desuffix(token, r1, r2, is_short):
 def alias(token):
     # step 00
     if (token in aliases):
-        token = aliases[token]
+        return aliases[token]
     return token
 
 def stem(token):

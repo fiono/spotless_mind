@@ -11,14 +11,14 @@ from stemmer import stem
 
 class Searcher:
   def __init__(self):
-    with open('indexes/data_index', "r") as index_file:
-      self.index = json.loads(index_file.read())
-      self.index_dict = self.index["index"]
-      self.id_map = self.index["id_map"]
+    with open('indexes/data_index', "r") as indexFile:
+      self.index = json.loads(indexFile.read())
+      self.indexDict = self.index["index"]
+      self.idMap = self.index["id_map"]
 
   def printResult(self, doc):
     print("\n")
-    filename = self.id_map[str(doc)]
+    filename = self.idMap[str(doc)]
     print(filename)
 
     with open("data/" + filename, 'r') as doc:
@@ -26,11 +26,11 @@ class Searcher:
       print("========")
       print("\n")
 
-  def search(self, query, is_phrase):
+  def search(self, query, isPhrase):
     results = []
 
     stemmed = [stem(t) for t in query.split(" ")]
-    if (is_phrase):
+    if (isPhrase):
       results = self.phraseSearch(stemmed)
     else:
       results = self.termSearch(stemmed)
@@ -39,33 +39,33 @@ class Searcher:
       self.printResult(doc)
 
   def phraseSearch(self, terms):
-    postings_lists = []
+    postingsLists = []
 
     for term in terms:
       try:
-        sorted_postings = OrderedDict(sorted(self.index_dict[term].items(), key=lambda t:t[0]))
-        postings_lists.append(sorted_postings)
+        sortedPostings = OrderedDict(sorted(self.indexDict[term].items(), key=lambda t:t[0]))
+        postingsLists.append(sortedPostings)
       except KeyError:
         pass
 
-    return phrase_merge(postings_lists)
+    return phraseMerge(postingsLists)
 
   def termSearch(self, terms):
     docset = []
 
     for term in terms:
       try:
-        term_map = self.index_dict[term]
-        doc_ids = sorted(term_map.keys())
-        docset.append(doc_ids)
+        termMap = self.indexDict[term]
+        docIds = sorted(termMap.keys())
+        docset.append(docIds)
       except KeyError:
         pass
 
     return merge(docset)
 
   def removeNailPolish(self, results):
-    nail_polish_results = self.phraseSearch("nail polish".split())
-    return difference(results, nail_polish_results)
+    npResults = self.phraseSearch("nail polish".split())
+    return difference(results, npResults)
 
 
 if __name__ == '__main__':

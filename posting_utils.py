@@ -74,7 +74,7 @@ def merge(docset):
 
 # finds the positional intersection of two posting lists as ordered dictionaries
 # from doc id to list of positions, sorted by doc id
-def phrase_match(p1, p2):
+def phraseMatch(p1, p2):
     return findMatchesAcrossCollections(p1, p2, lambda id1, id2:
             (id1 == id2) and len(findMatchesAcrossCollections(p1[id1], p2[id2], lambda p1, p2:
                 # the position of term 1 must directly precede the position of term 2
@@ -83,13 +83,13 @@ def phrase_match(p1, p2):
            )
 
 # returns a phrase match across sorted postings lists
-def phrase_merge(postings_set):
-    if (len(postings_set) == 0):
+def phraseMerge(postingsSet):
+    if (len(postingsSet) == 0):
         return []
-    elif (len(postings_set) == 1):
-        return postings_set[0].keys()
+    elif (len(postingsSet) == 1):
+        return postingsSet[0].keys()
 
     return intersect(
-                phrase_match(postings_set[0], postings_set[1]),
-                phrase_merge(postings_set[1:])
+                phraseMatch(postingsSet[0], postingsSet[1]),
+                phraseMerge(postingsSet[1:])
            )
