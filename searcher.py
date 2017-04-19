@@ -34,7 +34,8 @@ class Searcher:
     else:
       results = self.termSearch(stemmed)
 
-    for doc in self.removeNailPolish(results):
+    #for doc in self.removeNailPolish(results):
+    for doc in results:
       self.printResult(doc)
 
   def termSearch(self, terms):
@@ -46,32 +47,25 @@ class Searcher:
     return set.intersection(*postingsLists)
 
   def phraseSearch(self, terms):
+    if len(terms) == 1:
+      return self.termSearch(terms[0])
+
     try:
-      postingsLists = [self.indexDict[t] for t in terms]
+      candidates = set.intersection(*[set(self.indexDict[t].keys()) for t in terms])
     except KeyError:
       return []
 
-    if len(postingsLists) == 1:
-      return postingsLists[0].keys()
-
-    matches = set()
-    for i in range(0, len(postingsLists) - 1):
-      m = set(phraseMatch(postingsLists[i], postingsLists[i + 1]))
-      if i > 0:
-        matches = matches.intersection(m)
-      else:
-        matches = m
-
-    return matches
-
-  def phraseMatch(p1, p2):
     matches = []
-    candidates = set(p1.keys()).intersection(p2.keys())
+    for docId in candidates:
+      positions = [self.indexDict[t][docId] for t in terms]
 
-    for doc_id in candidates:
-      for pos in p1[doc_id]:
-        if (pos + 1) in p2[doc_id]:
-          matches.append(doc_id)
+      for init in positions[0]:
+        checks = []
+        for i in range(0, len(positions)):
+          checks.append((init + i) in positions[i])
+        if all(checks):
+          matches.append(docId)
+          break
 
     return matches
 
