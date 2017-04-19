@@ -38,17 +38,12 @@ class Searcher:
       self.printResult(doc)
 
   def termSearch(self, terms):
-    docset = []
+    try:
+      postingsLists = [set(self.indexDict[t].keys()) for t in terms]
+    except KeyError:
+      return []
 
-    for term in terms:
-      try:
-        termMap = self.indexDict[term]
-        docIds = sorted(termMap.keys())
-        docset.append(docIds)
-      except KeyError:
-        pass
-
-    return merge(docset)
+    return set.intersection(*postingsLists)
 
   def phraseSearch(self, terms):
     try:
