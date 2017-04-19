@@ -1,5 +1,4 @@
 import argparse
-from collections import OrderedDict
 from collections import Set
 import json
 import os
@@ -38,18 +37,6 @@ class Searcher:
     for doc in self.removeNailPolish(results):
       self.printResult(doc)
 
-  def phraseSearch(self, terms):
-    postingsLists = []
-
-    for term in terms:
-      try:
-        sortedPostings = OrderedDict(sorted(self.indexDict[term].items(), key=lambda t:t[0]))
-        postingsLists.append(sortedPostings)
-      except KeyError:
-        pass
-
-    return phraseMerge(postingsLists)
-
   def termSearch(self, terms):
     docset = []
 
@@ -63,9 +50,39 @@ class Searcher:
 
     return merge(docset)
 
+  def phraseSearch(self, terms):
+    try:
+      postingsLists = [self.indexDict[t] for t in terms]
+    except KeyError:
+      return []
+
+    if len(postingsLists) == 1:
+      return postingsLists[0].keys()
+
+    matches = set()
+    for i in range(0, len(postingsLists) - 1):
+      m = set(phraseMatch(postingsLists[i], postingsLists[i + 1]))
+      if i > 0:
+        matches = matches.intersection(m)
+      else:
+        matches = m
+
+    return matches
+
+  def phraseMatch(p1, p2):
+    matches = []
+    candidates = set(p1.keys()).intersection(p2.keys())
+
+    for doc_id in candidates:
+      for pos in p1[doc_id]:
+        if (pos + 1) in p2[doc_id]:
+          matches.append(doc_id)
+
+    return matches
+
   def removeNailPolish(self, results):
     npResults = self.phraseSearch("nail polish".split())
-    return difference(results, npResults)
+    return set(results) - set(npResults)
 
 
 if __name__ == '__main__':
