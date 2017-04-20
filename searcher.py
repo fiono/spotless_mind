@@ -49,13 +49,7 @@ class Searcher:
     return set.union(*postingsLists) if isOrMatch else set.intersection(*postingsLists)
 
   def phraseSearch(self, terms):
-    if len(terms) == 1:
-      return self.termSearch(terms[0])
-
-    try:
-      candidates = set.intersection(*[set(self.indexDict[t].keys()) for t in terms])
-    except KeyError:
-      return []
+    candidates = self.termSearch(terms, isOrMatch=False)
 
     matches = []
     for docId in candidates:
