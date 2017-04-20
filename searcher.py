@@ -25,26 +25,28 @@ class Searcher:
       print("========")
       print("\n")
 
-  def search(self, query, isPhrase):
+  def search(self, query, isPhrase, isOrMatch):
     results = []
 
     stemmed = [stem(t) for t in query.split(" ")]
     if (isPhrase):
       results = self.phraseSearch(stemmed)
     else:
-      results = self.termSearch(stemmed)
+      results = self.termSearch(stemmed, isOrMatch)
 
-    #for doc in self.removeNailPolish(results):
-    for doc in results:
+    for doc in self.removeNailPolish(results):
       self.printResult(doc)
 
-  def termSearch(self, terms):
-    try:
-      postingsLists = [set(self.indexDict[t].keys()) for t in terms]
-    except KeyError:
-      return []
+  def termSearch(self, terms, isOrMatch=False):
+    postingsLists = []
 
-    return set.intersection(*postingsLists)
+    for t in terms:
+      try:
+        postingsLists.append(set(self.indexDict[t].keys()))
+      except KeyError:
+        postingsLists.append(set())
+
+    return set.union(*postingsLists) if isOrMatch else set.intersection(*postingsLists)
 
   def phraseSearch(self, terms):
     if len(terms) == 1:
@@ -78,8 +80,9 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--query', type=str)
   parser.add_argument('--phrase', action='store_true')
+  parser.add_argument('--orMatch', action='store_true')
   args = parser.parse_args()
 
   s = Searcher()
-  s.search(args.query, args.phrase)
+  s.search(args.query, args.phrase, args.orMatch)
 
