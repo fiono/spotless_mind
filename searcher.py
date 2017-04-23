@@ -46,7 +46,10 @@ class Searcher:
       except KeyError:
         postingsLists.append(set())
 
-    return set.union(*postingsLists) if isOrMatch else set.intersection(*postingsLists)
+    if isOrMatch:
+      return set.union(*postingsLists)
+    else:
+      return set.intersection(*postingsLists)
 
   def phraseSearch(self, terms):
     candidates = self.termSearch(terms, isOrMatch=False)
@@ -56,10 +59,10 @@ class Searcher:
       positions = [self.indexDict[t][docId] for t in terms]
 
       for init in positions[0]:
-        checks = []
+        positionChecks = []
         for i in range(0, len(positions)):
-          checks.append((init + i) in positions[i])
-        if all(checks):
+          positionChecks.append((init + i) in positions[i])
+        if all(positionChecks):
           matches.append(docId)
           break
 
